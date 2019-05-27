@@ -3,6 +3,9 @@ class Ray {
     this.pos = pos;
     this.dir = p5.Vector.fromAngle(angle);
   }
+  setAngle(angle){
+    this.dir = p5.Vector.fromAngle(angle);
+  }
   lookAt(x, y){
     this.dir.x = x - this.pos.x;
     this.dir.y = y - this.pos.y;
