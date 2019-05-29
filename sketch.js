@@ -13,9 +13,9 @@ let speedSlider;
 const LIFESPAN = 80;
 const MUTATION_RATE = 0.5 ;
 const MAX_SIGHT = 75;
-const MAX_SPEED = 3;
-const MAX_FORCE = 0.7;
-const FOV = 130;
+const MAX_SPEED = 8;
+const MAX_FORCE = 1.0;
+const FOV = 90;
 let inside = [];
 let outside = [];
 let checkpoints = [];
@@ -25,8 +25,8 @@ let startPoint = 0;
 
 function buildTrack(){
 	let noiseMax = 4;
-	let trackSegments = 30;
-	const pathWidth = 50;
+	let trackSegments = 40;
+	const pathWidth = 30;
 	let startX = random(1000);
 	let startY = random(1000);
 	checkpoints = [];

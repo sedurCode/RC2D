@@ -38,7 +38,7 @@ class Particle {
       this.brain = brain.copy();
       // console.log("brain coppiedss")
     } else {
-      this.brain = new NeuralNetwork(this.rays.length, this.rays.length, 1);
+      this.brain = new NeuralNetwork(this.rays.length+2, this.rays.length+2, 2);
     }
   }
   mutate(){
@@ -137,7 +137,7 @@ class Particle {
         }
       }
       inputs[i] = map(record, 0, 50, 1, 0);
-      if (record < 2) {
+      if (record < 5) {
         // console.log('hit wall')
         this.dead = true;
       }
@@ -152,17 +152,19 @@ class Particle {
       // }
       scene[i] = record;
     }
-    // const vel = this.vel.copy();
-    // vel.normalize();
-    // inputs.push(vel.x);
-    // inputs.push(vel.y);
+    const vel = this.vel.copy();
+    vel.normalize();
+    inputs.push(vel.x);
+    inputs.push(vel.y);
     const output = this.brain.predict(inputs);
     // const angle = map(output[0], 0, 1, 0, TWO_PI);
     // const steering = p5.Vector.fromAngle(angle);
     let angle = map(output[0], 0, 1, -PI, TWO_PI);
     angle += this.vel.heading();
     const steering = p5.Vector.fromAngle(angle);
-    steering.setMag(this.maxSpeed);
+    let targSpeed = map(output[1], 0, 1, 0, MAX_SPEED);
+    // steering.setMag(this.maxSpeed);
+    steering.setMag(targSpeed);
     steering.sub(this.vel);
     steering.limit(this.maxForce);
     this.applyForce(steering);
