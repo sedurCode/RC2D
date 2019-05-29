@@ -1,4 +1,4 @@
-const totalPopulation = 50;
+const totalPopulation = 100;
 let walls = [];
 let ray;
 // let particle;
@@ -10,29 +10,42 @@ const sceneW = 800;
 const sceneH = 800;
 let sliderFOV;
 let speedSlider;
-const MUTATION_RATE = 0.05;
-const inside = [];
-const outside = [];
-const checkpoints = [];
+const LIFESPAN = 80;
+const MUTATION_RATE = 0.5 ;
+const MAX_SIGHT = 75;
+const MAX_SPEED = 3;
+const MAX_FORCE = 0.7;
+const FOV = 130;
+let inside = [];
+let outside = [];
+let checkpoints = [];
+let start = [];
+let end = [];
+let startPoint = 0;
 
-function setup() {
-	// createCanvas(windowWidth, windowHeight);
-	createCanvas(sceneW, sceneH);
-	// walls
-	tf.setBackend('cpu');
-	let noiseMax = 2;
+function buildTrack(){
+	let noiseMax = 4;
 	let trackSegments = 30;
+	const pathWidth = 50;
+	let startX = random(1000);
+	let startY = random(1000);
+	checkpoints = [];
+	walls = [];
+	inside = [];
+	outside = [];
+	start = [];
+	end = [];
 	for (let i = 0; i < trackSegments; i++) {
 			let a = map(i, 0, trackSegments, 0, TWO_PI);
-	  	let xoff = map(cos(a), -1, 1, 0, noiseMax);
-	  	let yoff = map(sin(a), -1, 1, 0, noiseMax);
+	  	let xoff = map(cos(a), -1, 1, 0, noiseMax) + startX;
+	  	let yoff = map(sin(a), -1, 1, 0, noiseMax) + startY;
 	  	let r = map(noise(xoff, yoff), 0, 1, 100, height / 2 + 50);
 			let x = width/2 + r * cos(a);
 	  	let y = height/2 + r * sin(a);
-	  	let x1 = width/2 + (r - 50) * cos(a);
-	  	let y1 = height/2 + (r - 50) * sin(a);
-			let x2 = width/2 + (r + 50) * cos(a);
-	  	let y2 = height/2 + (r + 50) * sin(a);
+	  	let x1 = width/2 + (r - pathWidth) * cos(a);
+	  	let y1 = height/2 + (r - pathWidth) * sin(a);
+			let x2 = width/2 + (r + pathWidth) * cos(a);
+	  	let y2 = height/2 + (r + pathWidth) * sin(a);
 			checkpoints.push(new Boundary(x1, y1, x2, y2));
 			inside.push(createVector(x1, y1));
 			outside.push(createVector(x2, y2));
@@ -47,8 +60,17 @@ function setup() {
 	}
 	let totalCheckpoints = checkpoints.length;
 	walls.push(new Boundary(outside[totalCheckpoints-1].x, outside[totalCheckpoints-1].y, inside[totalCheckpoints-1].x, inside[totalCheckpoints-1].y));
-	start = checkpoints[0];
-	end = checkpoints[totalCheckpoints-2];
+	startPoint = ceil(random());
+	start = checkpoints[0].midpoint();
+	end = checkpoints[totalCheckpoints-2].midpoint();
+}
+
+function setup() {
+	// createCanvas(windowWidth, windowHeight);
+	createCanvas(sceneW, sceneH);
+	// walls
+	tf.setBackend('cpu');
+	buildTrack();
 	for (let i = 0; i < totalPopulation; i++){
 		population[i] = new Particle();
 	}
@@ -56,6 +78,24 @@ function setup() {
 }
 
 function draw() {
+	// draw
+	// Set background to black
+	background(0);
+	// plot the walls
+	for (let wall of walls) {
+		wall.show();
+	}
+	// for (let check of checkpoints){
+	// 	stroke(255, 100);
+	// 	check.show();
+	// }
+	for (let particle of population)
+	{
+		// show the particles
+		particle.show();
+	}
+	ellipse(start.x, start.y, 10)
+	ellipse(end.x, end.y, 10);
 	// handle sim speed
 	const cycles = speedSlider.value();
 	for (let n = 0; n < cycles; n++){
@@ -65,7 +105,7 @@ function draw() {
 		// Call the look
 		particle.look(walls);
 		// check nearness to end
-		particle.check(end);
+		particle.check(checkpoints);
 		// check bounds
 		particle.bounds();
 		// update the movement
@@ -81,24 +121,26 @@ function draw() {
 		}
 	}
 	if (population.length == 0){
+		buildTrack();
 		nextGeneration(end);
 	}
 }
-	// draw
-	// Set background to black
-	background(0);
-	// plot the walls
-	for (let wall of walls) {
-		wall.show();
-	}
-	for (let check of checkpoints){
-		check.show();
-	}
-	for (let particle of population)
-	{
-		// show the particles
-		particle.show();
-	}
-	ellipse(start.x, start.y, 10)
-	ellipse(end.x, end.y, 10);
+	// // draw
+	// // Set background to black
+	// background(0);
+	// // plot the walls
+	// for (let wall of walls) {
+	// 	wall.show();
+	// }
+	// // for (let check of checkpoints){
+	// // 	stroke(255, 100);
+	// // 	check.show();
+	// // }
+	// for (let particle of population)
+	// {
+	// 	// show the particles
+	// 	particle.show();
+	// }
+	// ellipse(start.x, start.y, 10)
+	// ellipse(end.x, end.y, 10);
 }

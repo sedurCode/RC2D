@@ -1,6 +1,7 @@
 class Ray {
   constructor(pos, angle){
     this.pos = pos;
+    this.angle = angle;
     this.dir = p5.Vector.fromAngle(angle);
   }
   setAngle(angle){
@@ -17,6 +18,9 @@ class Ray {
     translate(this.pos.x, this.pos.y);
     line(0, 0, this.dir.x * 10, this.dir.y * 10);
     pop();
+  }
+  rotate(offset){
+    this.dir = p5.Vector.fromAngle(this.angle + offset);
   }
   cast(wall){
     // Boundary
