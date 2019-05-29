@@ -1,2 +1,2 @@
-# Ray Caster
-Based on the coding train, I want to build a ray caster that will generate acoustic impulse responses that you can download. The first step is to generate the graphical environment from the coding train work.
+# Ray Casting
+This project based on the coding train https://github.com/CodingTrain/NeuroEvolution-Vehicles is my implementation of ray casting fun in p5.js
